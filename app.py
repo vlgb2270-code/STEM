@@ -207,7 +207,7 @@ def train_sentiment_model():
         ("Không có thông tin gì thêm", "unclear"),
         ("Em chưa hiểu câu hỏi muốn hỏi điều gì", "unclear"),
         ("Ý kiến của em hiện tại chưa rõ ràng", "unclear"),
-        ("Em không biết tiết học có tốt hay không", "unclear")
+        ("Em không biết tiết học có tốt hay không", "unclear"),
         ("Vui cũng vui mà không vui cũng không vui", "unclear"),
         ("Em thấy cũng được nhưng cũng không được", "unclear"),
         ("Tốt hay không thì em cũng không biết", "unclear"),
