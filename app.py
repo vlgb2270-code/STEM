@@ -175,8 +175,15 @@ def train_sentiment_model():
         ("Tiết học vui nhưng cô nói nhanh em chưa kịp chép", "neutral"),
 
         # --- 3. TIÊU CỰC / CẦN LƯU Ý (NEGATIVE) ---
+        ("Hôm nay có những môn chưa được sôi nổi, còn hơi nhàm chán", "negative"),
+        ("Một số tiết học hôm nay khá nhàm chán", "negative"),
+        ("Buổi học chưa thực sự hấp dẫn", "negative"),
+        ("Em cảm thấy tiết học hơi buồn tẻ", "negative"),
+        ("Các môn học hôm nay chưa tạo được hứng thú", "negative"),
+        ("Cách tổ chức tiết học chưa sôi nổi", "negative"),
+        ("Em chưa thấy hứng thú với một số môn học", "negative"),
         ("Cô hay bắt bọn em chép phạt", "negative"),
-        ("Thầy giạy hơi khó hiểu, khô khan", "negative"),
+        ("Thầy dạy hơi khó hiểu, khô khan", "negative"),
         ("Thầy cô hay phạt chép bài nhiều lần quá mức", "negative"),
         ("Thầy cô hay la mắng và phạt học sinh trước lớp", "negative"),
         ("Bị phạt đứng cuối lớp và chép phạt mỏi tay", "negative"),
