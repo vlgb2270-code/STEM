@@ -208,14 +208,11 @@ def train_sentiment_model():
         ("Em chưa hiểu câu hỏi muốn hỏi điều gì", "unclear"),
         ("Ý kiến của em hiện tại chưa rõ ràng", "unclear"),
         ("Em không biết tiết học có tốt hay không", "unclear"),
-        ("Vui cũng vui mà không vui cũng không vui", "unclear"),
-        ("Em thấy cũng được nhưng cũng không được", "unclear"),
-        ("Tốt hay không thì em cũng không biết", "unclear"),
         ("Có lẽ là ổn nhưng em không chắc", "unclear"),
         ("Em không biết nên khen hay chê", "unclear"),
         ("Nói chung là khó nói lắm ạ", "unclear"),
-        ("Vừa thích vừa không thích", "unclear"),
-        ("Cũng bình thường mà cũng hơi lạ", "unclear"),
+        ("Thầy dạy hay, dễ hiểu nhưng thầy đấm đau", "unclear"),
+        ("Hôm nay học cũng được nhưng cô hôm nay hơi lạ lạ", "unclear"),
     ]
     
     # Tạo DataFrame trực tiếp từ danh sách cặp dữ liệu
