@@ -176,6 +176,7 @@ def train_sentiment_model():
 
         # --- 3. TIÊU CỰC / CẦN LƯU Ý (NEGATIVE) ---
         ("Cô hay bắt bọn em chép phạt", "negative"),
+        ("Thầy giạy hơi khó hiểu, khô khan", "negative"),
         ("Thầy cô hay phạt chép bài nhiều lần quá mức", "negative"),
         ("Thầy cô hay la mắng và phạt học sinh trước lớp", "negative"),
         ("Bị phạt đứng cuối lớp và chép phạt mỏi tay", "negative"),
