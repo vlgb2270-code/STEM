@@ -405,10 +405,12 @@ else:
             pos = len(filtered_df[filtered_df["Sentiment"] == "positive"])
             neu = len(filtered_df[filtered_df["Sentiment"] == "neutral"])
             neg = len(filtered_df[filtered_df["Sentiment"] == "negative"])
+            unclear = len(filtered_df[filtered_df["Sentiment"] == "unclear"])
             
             pos_pct = f"{(pos/total*100):.1f}%" if total else "0%"
             neu_pct = f"{(neu/total*100):.1f}%" if total else "0%"
             neg_pct = f"{(neg/total*100):.1f}%" if total else "0%"
+            unclear_pct = f"{(unclear/total*100):.1f}%" if total else "0%"
             
             # Khối thẻ số liệu thống kê tổng kết
             metrics_html = f"""
