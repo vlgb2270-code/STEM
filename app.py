@@ -71,7 +71,7 @@ st.markdown("""
 
     .metric-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 15px;
         margin-bottom: 25px;
     }
@@ -195,7 +195,27 @@ def train_sentiment_model():
         ("Em cảm thấy rất áp lực và sợ hãi mỗi khi đến giờ môn này vì thầy cô thường xuyên gọi kiểm tra bài đầu giờ với thái độ gay gắt.", "negative"),
         ("Cô thiên vị rõ ràng nhóm bạn học giỏi ở bàn đầu, nhóm chúng em giơ tay phát biểu nhiều lần nhưng cô hoàn toàn ngó lơ.", "negative"),
         ("Lời nói mỉa mai của thầy hôm nay trước cả lớp khiến em cảm thấy rất tự ti và bị xúc phạm lòng tự trọng.", "negative"),
-        ("Lớp quá ồn ào và mất trật tự nhưng thầy cô không nhắc nhở nghiêm túc, làm những bạn muốn nghe giảng như em không thể tập trung học được.", "negative")
+        ("Lớp quá ồn ào và mất trật tự nhưng thầy cô không nhắc nhở nghiêm túc, làm những bạn muốn nghe giảng như em không thể tập trung học được.", "negative"),
+
+        # --- 4. KHÔNG RÕ / CHƯA ĐỦ THÔNG TIN (UNCLEAR) ---
+        ("Em không biết phải nhận xét như thế nào", "unclear"),
+        ("Em chưa có ý kiến cụ thể về tiết học", "unclear"),
+        ("Em cũng không rõ nữa", "unclear"),
+        ("Không biết nói gì", "unclear"),
+        ("Em chưa thể đánh giá được", "unclear"),
+        ("Cũng vậy thôi ạ", "unclear"),
+        ("Không có thông tin gì thêm", "unclear"),
+        ("Em chưa hiểu câu hỏi muốn hỏi điều gì", "unclear"),
+        ("Ý kiến của em hiện tại chưa rõ ràng", "unclear"),
+        ("Em không biết tiết học có tốt hay không", "unclear")
+        ("Vui cũng vui mà không vui cũng không vui", "unclear"),
+        ("Em thấy cũng được nhưng cũng không được", "unclear"),
+        ("Tốt hay không thì em cũng không biết", "unclear"),
+        ("Có lẽ là ổn nhưng em không chắc", "unclear"),
+        ("Em không biết nên khen hay chê", "unclear"),
+        ("Nói chung là khó nói lắm ạ", "unclear"),
+        ("Vừa thích vừa không thích", "unclear"),
+        ("Cũng bình thường mà cũng hơi lạ", "unclear"),
     ]
     
     # Tạo DataFrame trực tiếp từ danh sách cặp dữ liệu
@@ -275,46 +295,40 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
                 
                 best_class = classes[np.argmax(probs)]
                 
-                # Chỉ cảnh báo phân vân khi cả 2 sắc thái tích cực và tiêu cực sát nút (< 10%) và cùng vượt trội hơn trung tính
-                is_confused = (abs(pos_score - neg_score) < 0.10) and (pos_score > neu_score and neg_score > neu_score)
-                
-                if is_confused:
-                    st.warning(
-                        "⚠️ **Hệ thống chưa thể xác định rõ ý kiến của bạn** "
-                        "(phản hồi có thể đang chứa cả yếu tố khen và chê đan xen). "
-                        "**Bạn vui lòng nhập lại thông tin** chi tiết hoặc tách rõ từng ý kiến để thầy cô hỗ trợ tốt hơn nhé!"
-                    )
-                else:
-                    prediction = best_class
-                    with st.spinner("Đang lưu phản hồi lên Google Sheets..."):
-                        row_data = [
-                            get_vietnam_now(),
-                            selected_grade,
-                            selected_class,
-                            selected_subject,
-                            raw_feedback,
-                            prediction
-                        ]
-                        
-                        try:
-                            payload = json.dumps({"sheet_name": "Feedback", "row_data": row_data})
-                            res = requests.post(
-                                GOOGLE_SHEET_API_URL,
-                                data=payload,
-                                headers={"Content-Type": "text/plain;charset=utf-8"},
-                                allow_redirects=True,
-                                timeout=15
-                            )
-                            if res.status_code in [200, 302] or "success" in res.text:
-                                st.success("✅ Phản hồi của bạn đã được ghi nhận trên Google Sheets! Cảm ơn bạn đã đóng góp xây dựng tiết học.")
-                                st.balloons()
+                # Phản hồi mơ hồ hoặc mô hình thiếu tự tin được xếp vào "unclear".
+                is_confused = (
+                    abs(pos_score - neg_score) < 0.10
+                    and pos_score > neu_score
+                    and neg_score > neu_score
+                )
+                confidence = float(np.max(probs))
+                prediction = "unclear" if is_confused or confidence < 0.40 else best_class
+
+                with st.spinner("Đang lưu phản hồi lên Google Sheets..."):
+                    row_data = [
+                        get_vietnam_now(), selected_grade, selected_class,
+                        selected_subject, raw_feedback, prediction
+                    ]
+                    try:
+                        payload = json.dumps({"sheet_name": "Feedback", "row_data": row_data})
+                        res = requests.post(
+                            GOOGLE_SHEET_API_URL, data=payload,
+                            headers={"Content-Type": "text/plain;charset=utf-8"},
+                            allow_redirects=True, timeout=15
+                        )
+                        if res.status_code in [200, 302] or "success" in res.text:
+                            if prediction == "unclear":
+                                st.warning("ℹ️ Phản hồi đã được ghi nhận với phân loại: Chưa rõ cảm xúc.")
                             else:
-                                st.error(f"Lỗi gửi dữ liệu lên Google Sheets (Mã: {res.status_code}).")
-                        except requests.exceptions.Timeout:
-                            st.success("✅ Phản hồi đã được chuyển lên hệ thống Google Sheets thành công!")
+                                st.success("✅ Phản hồi của bạn đã được ghi nhận trên Google Sheets! Cảm ơn bạn đã đóng góp xây dựng tiết học.")
                             st.balloons()
-                        except Exception as e:
-                            st.error(f"Lỗi kết nối: {e}")
+                        else:
+                            st.error(f"Lỗi gửi dữ liệu lên Google Sheets (Mã: {res.status_code}).")
+                    except requests.exceptions.Timeout:
+                        st.success("✅ Phản hồi đã được chuyển lên hệ thống Google Sheets thành công!")
+                        st.balloons()
+                    except Exception as e:
+                        st.error(f"Lỗi kết nối: {e}")
 
     with col_right:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -415,6 +429,10 @@ else:
                         <div class="card-label">CẦN LƯU Ý (NEGATIVE)</div>
                         <div class="card-num" style="color: #ef4444;">{neg} <span style="font-size:14px;">({neg_pct})</span></div>
                     </div>
+                    <div class="card" style="border-top: 4px solid #64748b;">
+                        <div class="card-label">CHƯA RÕ (UNCLEAR)</div>
+                        <div class="card-num" style="color: #64748b;">{unclear} <span style="font-size:14px;">({unclear_pct})</span></div>
+                    </div>
                 </div>
             """
             st.markdown(metrics_html, unsafe_allow_html=True)
@@ -422,7 +440,7 @@ else:
             # Biểu đồ phân tích
             chart_col1, chart_col2 = st.columns(2)
             with chart_col1:
-                sentiment_map = {"positive": "Tích cực", "neutral": "Trung tính", "negative": "Cần lưu ý"}
+                sentiment_map = {"positive": "Tích cực", "neutral": "Trung tính", "negative": "Cần lưu ý", "unclear": "Chưa rõ"}
                 df_chart = filtered_df["Sentiment"].map(sentiment_map).value_counts().reset_index()
                 df_chart.columns = ["Phân loại", "Số lượng"]
                 
@@ -431,7 +449,7 @@ else:
                     title="Biểu đồ tỷ lệ phân bố cảm xúc",
                     hole=0.45,
                     color="Phân loại",
-                    color_discrete_map={"Tích cực": "#10B981", "Trung tính": "#F59E0B", "Cần lưu ý": "#EF4444"}
+                    color_discrete_map={"Tích cực": "#10B981", "Trung tính": "#F59E0B", "Cần lưu ý": "#EF4444", "Chưa rõ": "#64748B"}
                 )
                 fig_donut.update_traces(textposition='inside', textinfo='percent+label')
                 st.plotly_chart(fig_donut, use_container_width=True)
