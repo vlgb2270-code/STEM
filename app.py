@@ -366,14 +366,12 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
                 contrast_words = ["nhưng", "tuy nhiên", "song", "mặc dù", "dù"]
                 pos_keywords = ["hay", "tốt", "thích", "vui", "dễ hiểu", "sinh động", "nhiệt tình", "tận tình", "tích cực", "bổ ích", "ổn"]
                 neg_keywords = ["stress", "áp lực", "mệt", "khó", "chán", "nhiều quá", "quá nhiều", "gắt", "phạt", "buồn ngủ", "nhanh", "khô khan", "ồn"]
-                
-                # Cụm từ thể hiện thái độ không muốn học / chống đối
+
                 demotivated_phrases = [
-                    "chẳng muốn học", "không muốn học", "chán học", "chẳng buồn học", 
-                    "chả muốn học", "không thích học", "nghỉ học", "cúp học", "bỏ học"
+                  "chẳng muốn học", "không muốn học", "chán học", "chẳng buồn học", 
+                  "chả muốn học", "không thích học", "nghỉ học", "cúp học", "bỏ học"
                 ]
-                
-                # Cấu trúc gây nhiễu/mỉa mai: "vui đến nỗi...", "hay đến mức..."
+# Cấu trúc gây nhiễu/mỉa mai: "vui đến nỗi...", "hay đến mức..."
                 irony_connectors = ["đến nỗi", "đến mức"]
 
                 has_contrast = any(cw in text_lower for cw in contrast_words)
@@ -382,8 +380,8 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
                 has_demotivated = any(dp in text_lower for dp in demotivated_phrases)
                 has_irony = any(ic in text_lower for ic in irony_connectors) and has_pos
 
-                # Điều kiện chặn: Có từ chán học HOẶC có đan xét khen/chê HOẶC cấu trúc mỉa mai
-                is_invalid_content = has_demotivated or is_irony or (has_contrast and has_pos and has_neg)
+# Điều kiện chặn: Sửa 'is_irony' thành 'has_irony'
+                is_invalid_content = has_demotivated or has_irony or (has_contrast and has_pos and has_neg)
 
                 # Dự đoán xác suất của mô hình AI
                 clean_input = vietnamese_preprocessing(raw_feedback)
