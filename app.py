@@ -354,15 +354,7 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
             words = raw_feedback.split()
             text_lower = raw_feedback.lower()
             
-            # --- LỚP 1: KIỂM TRA ĐỘ DÀI & VÔ NGHĨA ---
-            if not raw_feedback:
-                st.warning("⚠️ Vui lòng viết vài dòng cảm nhận trước khi gửi nhé!")
-            elif len(raw_feedback) < 10 or len(words) < 3:
-                st.warning("⚠️ **Phản hồi quá ngắn hoặc chưa đủ rõ ý.** Vui lòng nhập cụ thể hơn.")
-            elif len(set(text_lower.replace(" ", ""))) < 4:
-                st.warning("⚠️ **Nội dung không hợp lệ.** Vui lòng nhập phản hồi bằng câu văn rõ nghĩa về tiết học.")
-            else:
-                # --- LỚP 2: PHÁT HIỆN CÂU MỈA MAI / CHÁN HỌC / ĐAN XEN / KHEN NGOẠI HÌNH CHÊ CHUYÊN MÔN ---
+          # --- LỚP 2: PHÁT HIỆN CÂU MỈA MAI / CHÁN HỌC / ĐAN XEN / KHEN NGOẠI HÌNH CHÊ CHUYÊN MÔN ---
             contrast_words = ["nhưng", "tuy nhiên", "song", "mặc dù", "dù"]
             
             # Mở rộng từ khen: Bao gồm chuyên môn, ngoại hình, tính cách & từ lóng
