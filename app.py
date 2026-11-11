@@ -384,7 +384,7 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
             has_irony = any(ic in text_lower for ic in irony_connectors) and has_pos
 
             # Điều kiện chặn: Chán học HOẶC mỉa mai HOẶC khen/chê đan xen
-            is_invalid_content = has_demotivated or has_irony or (has_contrast and has_pos and has_neg)
+            if is_invalid_content = has_demotivated or has_irony or (has_contrast and has_pos and has_neg)
                     st.error(
                         "🛑 **Hệ thống chưa thể ghi nhận phản hồi này.**\n\n"
                         "- **Lý do:** Nội dung chưa tập trung đánh giá chất lượng tiết học (có dấu hiệu mỉa mai, thông tin khen/chê bị đan xen gây mâu thuẫn).\n"
