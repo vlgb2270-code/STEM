@@ -354,25 +354,36 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
             words = raw_feedback.split()
             text_lower = raw_feedback.lower()
             
-            # --- LỚP 1: KIỂM TRA ĐỘ DÀI & VÔ NGHĨA (SPAM / RÁC) ---
+            # --- LỚP 1: KIỂM TRA ĐỘ DÀI & VÔ NGHĨA ---
             if not raw_feedback:
                 st.warning("⚠️ Vui lòng viết vài dòng cảm nhận trước khi gửi nhé!")
             elif len(raw_feedback) < 10 or len(words) < 3:
-                st.warning("⚠️ **Phản hồi quá ngắn hoặc chưa đủ rõ ý.** Vui lòng nhập cụ thể hơn về tiết học (tối thiểu 3 từ hoặc 10 ký tự).")
+                st.warning("⚠️ **Phản hồi quá ngắn hoặc chưa đủ rõ ý.** Vui lòng nhập cụ thể hơn (tối thiểu 3 từ hoặc 10 ký tự).")
             elif len(set(text_lower.replace(" ", ""))) < 4:
                 st.warning("⚠️ **Nội dung không hợp lệ.** Vui lòng nhập phản hồi bằng câu văn rõ nghĩa về tiết học.")
             else:
-                # --- LỚP 2: KIỂM TRA CẤU TRÚC ĐAN XEN (KHEN + CHÊ QUA LIÊN TỪ ĐỐI LẬP) ---
+                # --- LỚP 2: PHÁT HIỆN CÂU MỈA MAI / CHÁN HỌC / ĐAN XEN ---
                 contrast_words = ["nhưng", "tuy nhiên", "song", "mặc dù", "dù"]
                 pos_keywords = ["hay", "tốt", "thích", "vui", "dễ hiểu", "sinh động", "nhiệt tình", "tận tình", "tích cực", "bổ ích", "ổn"]
                 neg_keywords = ["stress", "áp lực", "mệt", "khó", "chán", "nhiều quá", "quá nhiều", "gắt", "phạt", "buồn ngủ", "nhanh", "khô khan", "ồn"]
+                
+                # Cụm từ thể hiện thái độ không muốn học / chống đối
+                demotivated_phrases = [
+                    "chẳng muốn học", "không muốn học", "chán học", "chẳng buồn học", 
+                    "chả muốn học", "không thích học", "nghỉ học", "cúp học", "bỏ học"
+                ]
+                
+                # Cấu trúc gây nhiễu/mỉa mai: "vui đến nỗi...", "hay đến mức..."
+                irony_connectors = ["đến nỗi", "đến mức"]
 
                 has_contrast = any(cw in text_lower for cw in contrast_words)
                 has_pos = any(pw in text_lower for pw in pos_keywords)
                 has_neg = any(nw in text_lower for nw in neg_keywords)
+                has_demotivated = any(dp in text_lower for dp in demotivated_phrases)
+                has_irony = any(ic in text_lower for ic in irony_connectors) and has_pos
 
-                # Ý kiến chứa cả liên từ đối lập + từ khen + từ chê
-                is_mixed_sentence = has_contrast and has_pos and has_neg
+                # Điều kiện chặn: Có từ chán học HOẶC có đan xét khen/chê HOẶC cấu trúc mỉa mai
+                is_invalid_content = has_demotivated or is_irony or (has_contrast and has_pos and has_neg)
 
                 # Dự đoán xác suất của mô hình AI
                 clean_input = vietnamese_preprocessing(raw_feedback)
@@ -382,24 +393,22 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
                 
                 pos_score = prob_dict.get("positive", 0.0)
                 neg_score = prob_dict.get("negative", 0.0)
-                neu_score = prob_dict.get("neutral", 0.0)
-                
                 max_prob = np.max(probs)
                 best_class = classes[np.argmax(probs)]
                 
-                # --- LỚP 3: KIỂM TRA ĐỘ TIN CÂY AI ---
                 is_confused_sentiment = (abs(pos_score - neg_score) < 0.12) and (pos_score > 0.30 and neg_score > 0.30)
                 is_low_confidence = max_prob < 0.50
                 
-                # CHẶN NẾU VI PHẠM MỘT TRONG CÁC ĐIỀU KIỆN NHẬP NHẰNG
-                if is_mixed_sentence or is_confused_sentiment or is_low_confidence:
+                # CHẶN KHI VI PHẠM
+                if is_invalid_content or is_confused_sentiment or is_low_confidence:
                     st.error(
-                        "🛑 **Hệ thống chưa thể ghi nhận phản hồi này do nội dung nhập nhằng/đan xen.**\n\n"
-                        "- **Lý do:** Ý kiến vừa khen vừa chê đan xen (chứa liên từ đối lập như 'nhưng' kết hợp ý khen và chê) hoặc chưa rõ tiêu chí cảm xúc.\n"
-                        "- **Yêu cầu:** Bạn vui lòng **tách làm 2 ý kiến riêng biệt** (một ý kiến khen tiết học, một ý kiến đóng góp về bài tập/áp lực) để thầy cô tiếp nhận chính xác nhất!"
+                        "🛑 **Hệ thống chưa thể ghi nhận phản hồi này.**\n\n"
+                        "- **Lý do:** Nội dung chưa tập trung đánh giá chất lượng tiết học (có dấu hiệu mỉa mai, chán học hoặc thông tin khen/chê bị đan xen gây mâu thuẫn).\n"
+                        "- **Yêu cầu:** Bạn vui lòng **nhập lại**, tập trung nhận xét cụ thể về bài giảng, bài tập hoặc cách truyền đạt của thầy cô!"
                     )
                 else:
                     prediction = best_class
+                    # ... [Giữ nguyên phần gửi dữ liệu lên Google Sheets như cũ] ...
                     with st.spinner("Đang lưu phản hồi lên Google Sheets..."):
                         row_data = [
                             get_vietnam_now(),
