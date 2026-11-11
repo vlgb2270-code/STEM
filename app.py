@@ -358,7 +358,7 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
             if not raw_feedback:
                 st.warning("⚠️ Vui lòng viết vài dòng cảm nhận trước khi gửi nhé!")
             elif len(raw_feedback) < 10 or len(words) < 3:
-                st.warning("⚠️ **Phản hồi quá ngắn hoặc chưa đủ rõ ý.** Vui lòng nhập cụ thể hơn (tối thiểu 3 từ hoặc 10 ký tự).")
+                st.warning("⚠️ **Phản hồi quá ngắn hoặc chưa đủ rõ ý.** Vui lòng nhập cụ thể hơn.")
             elif len(set(text_lower.replace(" ", ""))) < 4:
                 st.warning("⚠️ **Nội dung không hợp lệ.** Vui lòng nhập phản hồi bằng câu văn rõ nghĩa về tiết học.")
             else:
@@ -403,7 +403,7 @@ if menu == "📝 Cổng Ý Kiến Ẩn Danh (Học Sinh)":
                 if is_invalid_content or is_confused_sentiment or is_low_confidence:
                     st.error(
                         "🛑 **Hệ thống chưa thể ghi nhận phản hồi này.**\n\n"
-                        "- **Lý do:** Nội dung chưa tập trung đánh giá chất lượng tiết học (có dấu hiệu mỉa mai, chán học hoặc thông tin khen/chê bị đan xen gây mâu thuẫn).\n"
+                        "- **Lý do:** Nội dung chưa tập trung đánh giá chất lượng tiết học (có dấu hiệu mỉa mai, thông tin khen/chê bị đan xen gây mâu thuẫn).\n"
                         "- **Yêu cầu:** Bạn vui lòng **nhập lại**, tập trung nhận xét cụ thể về bài giảng, bài tập hoặc cách truyền đạt của thầy cô!"
                     )
                 else:
